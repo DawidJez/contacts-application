@@ -21,19 +21,22 @@ sudo apt-get install -y dotnet-sdk-10.0
 # Node.js
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
 nvm install --lts
+source ~/.bashrc # or restart bash terminal
 ```
 3. Get into src directory:
 ```bash
-docker compose up -d
-docker ps
+cd src
+sudo docker compose up -d
+sudo docker ps # list running containers
 ```
 4. Get into backend directory:
 ```bash
 dotnet restore
+dotnet tool restore
 dotnet ef database update
 dotnet run
 ```
-5. Get into fronted directory:
+5. Get into frontend directory:
 ```bash
 npm install
 npm run dev
