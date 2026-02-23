@@ -68,6 +68,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Endpoints
+// Register
 app.MapPost("/api/auth/register", async ( RegisterRequest req, AppDbContext db, PasswordHasher<User> hasher ) =>
 {
     if (string.IsNullOrWhiteSpace(req.Email) || string.IsNullOrWhiteSpace(req.Password))
@@ -101,6 +102,28 @@ app.MapPost("/api/auth/register", async ( RegisterRequest req, AppDbContext db, 
     await db.SaveChangesAsync();
 
     return Results.Created($"/api/users/{user.Id}", new { user.Id, user.Email });
+});
+
+// Login
+app.MapPost("/api/auth/login", async ( LoginRequest req, AppDbContext db, PasswordHasher<User> hasher, JwtTokenService tokens) =>
+{
+    if (string.IsNullOrWhiteSpace(req.Email) || string.IsNullOrWhiteSpace(req.Password))
+        return Results.BadRequest("Email and password are required.");
+
+    // Email
+    var email = req.Email.Trim();
+
+    var user = await db.Users.SingleOrDefaultAsync(u => u.Email == email);
+    if (user is null) 
+        return Results.Problem(title: "Unauthorized", detail: "Invalid email or password.", statusCode: StatusCodes.Status401Unauthorized);
+
+    // Password
+    var verify = hasher.VerifyHashedPassword(user, user.Password, req.Password);
+    if (verify == PasswordVerificationResult.Failed) 
+        return Results.Problem(title: "Unauthorized", detail: "Invalid email or password.", statusCode: StatusCodes.Status401Unauthorized);
+
+    var token = tokens.CreateToken(user.Id, user.Email);
+    return Results.Ok(new { token });
 });
 
 // App start up
