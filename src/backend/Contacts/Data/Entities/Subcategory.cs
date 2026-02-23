@@ -1,4 +1,4 @@
-namespace Contacts.Infrastructure.Entites;
+namespace Contacts.Data.Entities;
 
 public class Subcategory
 {

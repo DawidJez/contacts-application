@@ -1,4 +1,4 @@
-namespace Contacts.Infrastructure.Entites;
+namespace Contacts.Data.Entities;
 
 public class Contact
 {
@@ -13,7 +13,7 @@ public class Contact
     public int CategoryId { get; set; }
     public Category Category { get; set; } = null!;
 
-    public int? SubCategoryId { get; set; }
+    public int? SubcategoryId { get; set; }
     public Subcategory? Subcategory { get; set; } = null!;
     public string? CustomSubcategory { get; set; } // only when Category = "Inny"
 }
