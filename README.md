@@ -5,7 +5,7 @@
 - Node.js LTS
 - Docker
 
-### Step by step
+### Step by step (bash)
 1. Clone into repository:
 ```bash 
 git clone git@gitlab.com:lake-group/net-core.git 
@@ -15,6 +15,7 @@ git clone git@gitlab.com:lake-group/net-core.git
 2.2 .NET SDK and Node.js installation:
 ```bash
 # .NET SDK
+# at root directory
 sudo apt-get update
 sudo apt-get install -y dotnet-sdk-8.0
 
