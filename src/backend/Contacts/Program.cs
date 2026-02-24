@@ -10,6 +10,8 @@ using Contacts.Dtos.Auth;
 using Contacts.Auth;
 using Contacts.Data.Entities;
 using System.Text.RegularExpressions;
+// Endpoints import
+using Contacts.Endpoints;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -68,63 +70,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Endpoints
-// Register
-app.MapPost("/api/auth/register", async ( RegisterRequest req, AppDbContext db, PasswordHasher<User> hasher ) =>
-{
-    if (string.IsNullOrWhiteSpace(req.Email) || string.IsNullOrWhiteSpace(req.Password))
-        return Results.BadRequest("Email and password are required.");
+app.MapAuthEndpoints();
 
-    // Email
-    var email = req.Email.Trim(); // Trimming whitespaces
-
-    var exists = await db.Users.AnyAsync(x => x.Email == email);
-    if (exists) return Results.Conflict("Email already exists");
-
-    if (!Regex.IsMatch(email, @"^([^@\s]+@[^@\s]+\.[^@\s]+)$")) // Simple regex -> sth@sth.sth
-        return Results.BadRequest("Invalid email format.");
-
-    // Password
-    if (req.Password.Length < 8) return Results.BadRequest("Password must be at least 8 characters.");
-
-    if (!Regex.IsMatch(req.Password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).+$")) // String requires: lower char + upper char + digit + (not letter, not digit) special char
-        return Results.BadRequest("Password must have upper and lower cahracter, digit and special character.");
-
-    // Creates user
-    var user = new User {
-        Email = email,
-        Password = null
-    };
-
-    user.Password = hasher.HashPassword(user, req.Password);
-
-    // Adds user to db
-    db.Users.Add(user);
-    await db.SaveChangesAsync();
-
-    return Results.Created($"/api/users/{user.Id}", new { user.Id, user.Email });
-});
-
-// Login
-app.MapPost("/api/auth/login", async ( LoginRequest req, AppDbContext db, PasswordHasher<User> hasher, JwtTokenService tokens) =>
-{
-    if (string.IsNullOrWhiteSpace(req.Email) || string.IsNullOrWhiteSpace(req.Password))
-        return Results.BadRequest("Email and password are required.");
-
-    // Email
-    var email = req.Email.Trim();
-
-    var user = await db.Users.SingleOrDefaultAsync(u => u.Email == email);
-    if (user is null) 
-        return Results.Problem(title: "Unauthorized", detail: "Invalid email or password.", statusCode: StatusCodes.Status401Unauthorized);
-
-    // Password
-    var verify = hasher.VerifyHashedPassword(user, user.Password, req.Password);
-    if (verify == PasswordVerificationResult.Failed) 
-        return Results.Problem(title: "Unauthorized", detail: "Invalid email or password.", statusCode: StatusCodes.Status401Unauthorized);
-
-    var token = tokens.CreateToken(user.Id, user.Email);
-    return Results.Ok(new { token });
-});
-
-// App start up
 app.Run();

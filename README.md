@@ -31,7 +31,7 @@ sudo docker compose up -d
 4. Setting up the backend:
 ```bash
 dotnet restore
-dotnet ef database update
+dotnet ef database update --project src/backend/Contacts/Contacts.csproj
 dotnet run --project src/backend/Contacts/Contacts.csproj
 ```
 5. Get into frontend directory:
