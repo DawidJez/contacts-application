@@ -5,11 +5,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
-// Auth + Dtos
-using Contacts.Dtos.Auth;
+// Auth
 using Contacts.Auth;
 using Contacts.Data.Entities;
-using System.Text.RegularExpressions;
 // Endpoints import
 using Contacts.Endpoints;
 
@@ -25,13 +23,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
 });
 
-// Authorization
+// Authorization and authentication
+builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
  // JWT generator service
 builder.Services.AddSingleton<JwtTokenService>();
 
-// Hash password
+// Hash passwords
 builder.Services.AddScoped<PasswordHasher<User>>();
+builder.Services.AddScoped<PasswordHasher<Contact>>();
 
 // JWT config
 var jwtSection = builder.Configuration.GetSection("Jwt");

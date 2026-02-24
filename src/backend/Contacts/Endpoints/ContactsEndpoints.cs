@@ -2,11 +2,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 
-using Contacts.Auth;
-using Contacts.Dtos.Auth;
 using Contacts.Dtos.Contacts;
 using Contacts.Data;
 using Contacts.Data.Entities;
+using System.Timers;
 
 namespace Contacts.Endpoints;
 
@@ -158,5 +157,16 @@ public static class ContactsEndpoints
         await db.SaveChangesAsync();
 
         return Results.Created($"/api/contacts/{contact.Id}", new { contact.Id, contact.FirstName, contact.LastName } );
+    }
+
+    private static async Task<IResult> DeleteContact ( int id, AppDbContext db )
+    {
+        var foundContact = await db.Contacts.FirstOrDefaultAsync(el => el.Id == id);
+        if (foundContact is null) return Results.NotFound();
+
+        db.Contacts.Remove(foundContact);
+        await db.SaveChangesAsync();
+
+        return Results.Ok($"Contact {id} has been deleted.");
     }
 }
