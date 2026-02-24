@@ -299,8 +299,6 @@ public static class ContactsEndpoints
             {
                 if (subcId is null) return Results.BadRequest("Subcategory is required for category 'Służbowy'.");
 
-                if (custom is not null) return Results.BadRequest("CustomSsubcategory must be empty for category 'Służbowy'.");
-
                 // Subcategory must exist and belong to selected category
                 var subcExists = await db.Subcategories.AnyAsync(el => el.Id == subcId && el.CategoryId == newCategoryId);
                 if (!subcExists) return Results.BadRequest("Invalid subcategory for selected category.");
@@ -312,10 +310,7 @@ public static class ContactsEndpoints
             else if (categoryName == "Inny")
             {
                 if (custom is null)
-                    return Results.BadRequest("Custom ubcategory is required for category 'Inny'.");
-
-                if (subcId is not null)
-                    return Results.BadRequest("Subcategory must be empty for category 'Inny'.");
+                    return Results.BadRequest("Custom subcategory is required for category 'Inny'.");
 
                 foundContact.CategoryId = newCategoryId;
                 foundContact.SubcategoryId = null;
@@ -323,12 +318,6 @@ public static class ContactsEndpoints
             }
             else // "Prywatny"
             {
-                if (subcId is not null)
-                    return Results.BadRequest("SubcategoryIid must be empty for this category.");
-
-                if (custom is not null)
-                    return Results.BadRequest("Custom subcategory must be empty for this category.");
-
                 foundContact.CategoryId = newCategoryId;
                 foundContact.SubcategoryId = null;
                 foundContact.CustomSubcategory = null;
