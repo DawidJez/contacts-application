@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 using Contacts.Auth;
 using Contacts.Dtos.Auth;
@@ -17,6 +18,7 @@ public static class ContactsEndpoints
 
         group.MapGet("", GetContacts);
         group.MapGet("/{id:int}", GetContactDetails);
+        group.MapPost("", CreateContact).RequireAuthorization();
 
         return app;
     }
@@ -43,6 +45,7 @@ public static class ContactsEndpoints
             FirstName = el.FirstName,
             LastName = el.LastName,
             PhoneNumber = el.PhoneNumber,
+
             Email = el.Email,
 
             CategoryId = el.CategoryId,
@@ -56,5 +59,104 @@ public static class ContactsEndpoints
         }).Where(el => el.Id == id ).FirstOrDefaultAsync();
 
         return contactDetails is not null ? Results.Ok(contactDetails) : Results.NotFound();
+    }
+
+    private static async Task<IResult> CreateContact ( CreateContactRequest req, AppDbContext db, PasswordHasher<Contact> hasher )
+    {
+        if (string.IsNullOrWhiteSpace(req.Email) || string.IsNullOrWhiteSpace(req.Password))
+        return Results.BadRequest("Email and password are required.");
+
+        // Email
+        var email = req.Email.Trim();
+
+        var exists = await db.Contacts.AnyAsync(x => x.Email == email);
+        if (exists) return Results.Conflict("Contacts email already exists");
+
+        if (!Regex.IsMatch(email, @"^([^@\s]+@[^@\s]+\.[^@\s]+)$")) // Simple regex -> sth@sth.sth
+            return Results.BadRequest("Invalid email format.");
+
+        // Password
+        if (req.Password.Length < 8) return Results.BadRequest("Password must be at least 8 characters.");
+
+        // String requires: lower char + upper char + digit + (not letter, not digit) special char
+        if (!Regex.IsMatch(req.Password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).+$")) 
+            return Results.BadRequest("Password must have upper and lower cahracter, digit and special character.");
+
+        // First name and last name
+        var firstname = req.FirstName.Trim();
+        var lastname = req.LastName.Trim();
+
+        if (firstname.Length == 0) return Results.BadRequest("First name is required.");
+        if (lastname.Length == 0) return Results.BadRequest("Last name is required.");
+
+        // Category
+        var category = await db.Categories.FirstOrDefaultAsync(el => el.Id == req.CategoryId);
+        if (category is null) return Results.BadRequest("Invalid category.");
+
+        var categoryName = category.Name;
+
+        // Custom category and subcategory *optional
+        if (!string.IsNullOrWhiteSpace(req.CustomSubcategory)) req.CustomSubcategory = req.CustomSubcategory.Trim();
+
+        if (categoryName == "Służbowy")
+        {
+            if (!string.IsNullOrWhiteSpace(req.CustomSubcategory))
+                return Results.BadRequest("CustomSubcategory must be empty for category 'Służbowy'.");
+
+            // If subcategory exists it must belong to the selected category
+            var subcExists = await db.Subcategories.AnyAsync(el => el.Id == req.SubcategoryId && el.CategoryId == req.CategoryId);
+
+            if (!subcExists) return Results.BadRequest("Invalid SubcategoryId for selected category.");
+        }
+        else if (categoryName == "Inny")
+        {
+            if (string.IsNullOrWhiteSpace(req.CustomSubcategory))
+                return Results.BadRequest("CustomSubcategory is required for category 'Inny'.");
+
+            if (req.CustomSubcategory.Length > 100)
+                return Results.BadRequest("CustomSubcategory max length is 100.");
+
+            if (req.SubcategoryId is not null)
+                return Results.BadRequest("SubcategoryId must be empty for category 'Inny'.");
+        }
+        else // "Prywatny"
+        {
+            if (req.SubcategoryId is not null)
+                return Results.BadRequest("SubcategoryId must be empty for this category.");
+
+            if (!string.IsNullOrWhiteSpace(req.CustomSubcategory))
+                return Results.BadRequest("CustomSubcategory must be empty for this category.");
+        }
+
+        // Phone number *optional
+        if (!string.IsNullOrWhiteSpace(req.PhoneNumber))
+        {
+            req.PhoneNumber = req.PhoneNumber.Trim();
+            var phone = req.PhoneNumber;
+            if (phone.Length > 16) return Results.BadRequest("PhoneNumber max length is 16.");
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(phone, @"^(\+?[0-9]{7,15})$")) 
+                return Results.BadRequest("Invalid phone number format. (Make sure to include international prefix)");
+        }
+
+        // Creates contact
+        var contact = new Contact 
+        {
+            FirstName = firstname,
+            LastName = lastname,
+            Email = email,
+            CategoryId = req.CategoryId,
+            
+            PhoneNumber = req.PhoneNumber,
+            SubcategoryId = req.SubcategoryId,
+            CustomSubcategory = req.CustomSubcategory
+        };
+
+        contact.Password = hasher.HashPassword(contact, req.Password);
+
+        db.Contacts.Add(contact);
+        await db.SaveChangesAsync();
+
+        return Results.Created($"/api/contacts/{contact.Id}", new { contact.Id, contact.FirstName, contact.LastName } );
     }
 }
