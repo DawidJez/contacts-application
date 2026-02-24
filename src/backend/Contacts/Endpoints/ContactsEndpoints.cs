@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using Contacts.Dtos.Contacts;
 using Contacts.Data;
 using Contacts.Data.Entities;
-using System.Timers;
 
 namespace Contacts.Endpoints;
 
@@ -18,6 +17,7 @@ public static class ContactsEndpoints
         group.MapGet("", GetContacts);
         group.MapGet("/{id:int}", GetContactDetails);
         group.MapPost("", CreateContact).RequireAuthorization();
+        group.MapDelete("", DeleteContact).RequireAuthorization();
 
         return app;
     }
@@ -169,4 +169,6 @@ public static class ContactsEndpoints
 
         return Results.Ok($"Contact {id} has been deleted.");
     }
+
+
 }
