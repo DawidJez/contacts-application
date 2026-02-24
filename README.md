@@ -26,7 +26,7 @@ source ~/.bashrc # or restart bash terminal
 ```
 3. Start up the docker container:
 ```bash
-sudo docker compose up -d
+docker compose up -d
 ```
 4. Setting up the backend:
 ```bash

@@ -1,6 +1,6 @@
-namespace Contacts.Data.Entities;
+namespace Contacts.Dtos.Contacts;
 
-public class Contact
+public sealed class ContactDetails
 {
     public int Id { get; set; }
     public string FirstName { get; set; } = null!;
@@ -8,12 +8,12 @@ public class Contact
     public string? PhoneNumber { get; set; }
 
     public string Email { get; set; } = null!;
-    public string Password { get; set; } = null!;
 
     public int CategoryId { get; set; }
-    public Category Category { get; set; } = null!;
+    public string CategoryName { get; set; } = null!;
 
     public int? SubcategoryId { get; set; }
-    public Subcategory? Subcategory { get; set; }
+    public string? SubcategoryName { get; set; }
+
     public string? CustomSubcategory { get; set; } // only when Category = "Inny"
 }

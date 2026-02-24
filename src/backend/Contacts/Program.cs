@@ -71,5 +71,6 @@ app.UseAuthorization();
 
 // Endpoints
 app.MapAuthEndpoints();
+app.MapContactsEndpoints();
 
 app.Run();
