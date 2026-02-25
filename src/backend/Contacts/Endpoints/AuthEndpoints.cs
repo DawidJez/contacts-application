@@ -40,7 +40,7 @@ public static class AuthEndpoints
         if (req.Password.Length < 8) return Results.BadRequest("Password must be at least 8 characters.");
 
         if (!Regex.IsMatch(req.Password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).+$")) // String requires: lower char + upper char + digit + (not letter, not digit) special char
-            return Results.BadRequest("Password must have upper and lower cahracter, digit and special character.");
+            return Results.BadRequest("Password must have: upper and lower character, digit and special character.");
 
         // Creates user
         var user = new User {
@@ -53,7 +53,8 @@ public static class AuthEndpoints
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        return Results.Created($"/api/users/{user.Id}", new { user.Id, user.Email });
+        //return Results.Created($"/api/users/{user.Id}", new { user.Id, user.Email });
+        return Results.Ok("User created");
     }
 
     // Login

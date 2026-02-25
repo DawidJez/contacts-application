@@ -54,6 +54,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ClockSkew = TimeSpan.FromMinutes(1)
     };
 });
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", f => f.WithOrigins("http://127.0.0.1:5173/").AllowAnyHeader().AllowAnyMethod());
+});
 
 // App starting up
 var app = builder.Build();
@@ -64,8 +69,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
+app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
