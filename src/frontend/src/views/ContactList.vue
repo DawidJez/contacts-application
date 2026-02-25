@@ -2,5 +2,5 @@
 </script>
 
 <template>
-    <h1>Contact lsit</h1>
+    <h1>Contact list</h1>
 </template>
