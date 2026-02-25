@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import RegisterComponent from './components/RegisterComponent.vue'
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 

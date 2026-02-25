@@ -1,28 +1,49 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
+import { router } from "../router/router";
+import { computed } from 'vue';
 
 type Contact = {
-  id: number;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string | null;
-  email: string;
-  categoryId: number;
-  categoryName: string;
-  subcategoryId: number | null;
-  subcategoryName: string | null;
-  customSubcategory: string | null;
+    id: number;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string | null;
+    email: string;
+    categoryId: number;
+    categoryName: string;
+    subcategoryId: number | null;
+    subcategoryName: string | null;
+    customSubcategory: string | null;
 };
 
 const contact = ref<Contact | null>();
 const props = defineProps<{ id: string }>();
 
+const hasToken = computed(() => !!localStorage.getItem("token"));
+
 onMounted(async () => {
-  const res = await fetch(`/api/contacts/${props.id}`);
-  contact.value = await res.json();
+    const res = await fetch(`/api/contacts/${props.id}`);
+    contact.value = await res.json();
 });
 
-onUnmounted(async () => {contact.value = null});
+onUnmounted(() => {contact.value = null});
+
+async function deleteContact () {
+    const res = await fetch(`/api/contacts?id=${props.id}`, 
+    { 
+        method: "DELETE", 
+        headers: { 
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+    });
+
+    if (res.ok) {
+        router.push("/list");
+    }else {
+        const msg = await res.text();
+        console.log(res.status, msg);
+    }
+};
 </script>
 
 <template>
@@ -34,7 +55,8 @@ onUnmounted(async () => {contact.value = null});
     <p v-if="contact.phoneNumber">{{ contact.phoneNumber }}</p>
     <p v-if="contact.categoryName">Category: {{ contact.categoryName }}</p>
     <p v-if="contact.subcategoryName">Subcategory: {{ contact.subcategoryName }}</p>
-    <p v-if="contact.customSubcategory">Custom subcategory: {{ contact.customSubcategory }}</p>
+    <p v-if="contact.customSubcategory">Custom category: {{ contact.customSubcategory }}</p>
+    <button v-if="hasToken" @click="deleteContact">Delte contact</button>
   </div>
   <div v-else>No contact details</div>
 </template>
