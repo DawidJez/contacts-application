@@ -140,7 +140,7 @@ public static class ContactsEndpoints
             req.PhoneNumber = req.PhoneNumber.Trim();
             var phone = req.PhoneNumber;
 
-            if (!System.Text.RegularExpressions.Regex.IsMatch(phone, @"^(\+?[0-9]{7,15})$")) 
+            if (!System.Text.RegularExpressions.Regex.IsMatch(phone, @"^(\+[0-9]{7,15})$")) 
                 return Results.BadRequest("Invalid phone number format. (Make sure to include international prefix)");
         }
 

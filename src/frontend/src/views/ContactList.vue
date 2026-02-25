@@ -1,21 +1,22 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { RouterLink } from "vue-router";
 
 type Contact = {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string | null;
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
 };
 
 const contacts = ref<Contact[]>([]); // contact list
 const message = ref("");
 
 onMounted(async () => {
-    const res = await fetch("/api/contacts");
-    contacts.value = await res.json();
+  const res = await fetch("/api/contacts");
+  contacts.value = await res.json();
 
-    if (contacts.value.length == 0 ) message.value = "No contacts";
+  if (contacts.value.length == 0 ) message.value = "No contacts";
 });
 </script>
 
@@ -26,8 +27,10 @@ onMounted(async () => {
 
   <ul v-else>
     <li v-for="c in contacts" :key="c.id">
-      {{ c.firstName }} {{ c.lastName }}
-      <span v-if="c.email"> - {{ c.email }}</span>
+      <RouterLink :to="`/contacts/${c.id}`" >
+        {{ c.firstName }} {{ c.lastName }}
+        <span v-if="c.email"> - {{ c.email }}</span>
+      </RouterLink>
     </li>
   </ul>
 </template>
