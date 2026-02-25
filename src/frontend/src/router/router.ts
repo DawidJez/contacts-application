@@ -7,7 +7,9 @@ import ContactList from '../views/ContactList.vue'
 const routes = [
   { path: '/register', component: RegisterView, meta: { guestOnly: true }}, // if authenticated you can't visit register
   { path: '/login', component: LoginView, meta: { guestOnly: true }},       // or login
-  { path: '/list', component: ContactList, meta: { requiresAuth: false } } // doesn't require authentication
+  { path: '/list', component: ContactList, meta: { requiresAuth: false } }, // doesn't require authentication
+
+  { path: "/:pathMatch(.*)*", redirect: "/list" } // catches not existing paths
 ]
 
 export const router = createRouter({
