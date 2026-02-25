@@ -18,7 +18,7 @@ public static class ContactsEndpoints
         group.MapGet("/{id:int}", GetContactDetails);
         group.MapPost("", CreateContact).RequireAuthorization();
         group.MapDelete("", DeleteContact).RequireAuthorization();
-        group.MapPut("", EditContact).RequireAuthorization();
+        group.MapPatch("", EditContact).RequireAuthorization();
 
         return app;
     }
@@ -112,7 +112,7 @@ public static class ContactsEndpoints
             // If subcategory exists it must belong to the selected category
             var subcExists = await db.Subcategories.AnyAsync(el => el.Id == req.SubcategoryId && el.CategoryId == req.CategoryId);
 
-            if (!subcExists) return Results.BadRequest("Invalid subcategory id for selected category.");
+            if (!subcExists) return Results.BadRequest("Please select a subcategory for this category.");
         }
         else if (categoryName == "Inny")
         {
@@ -162,7 +162,8 @@ public static class ContactsEndpoints
         db.Contacts.Add(contact);
         await db.SaveChangesAsync();
 
-        return Results.Created($"/api/contacts/{contact.Id}", new { contact.Id, contact.FirstName, contact.LastName } );
+        //return Results.Created($"/api/contacts/{contact.Id}", new { contact.Id, contact.FirstName, contact.LastName } );
+        return Results.Ok("Contact created");
     }
 
     private static async Task<IResult> DeleteContact ( int id, AppDbContext db )
