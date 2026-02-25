@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { router } from "../router/router";
 import { computed } from 'vue';
+import { RouterLink } from "vue-router";
 
 type Contact = {
     id: number;
@@ -56,6 +57,7 @@ async function deleteContact () {
     <p v-if="contact.categoryName">Category: {{ contact.categoryName }}</p>
     <p v-if="contact.subcategoryName">Subcategory: {{ contact.subcategoryName }}</p>
     <p v-if="contact.customSubcategory">Custom category: {{ contact.customSubcategory }}</p>
+    <RouterLink :to="`/edit/${props.id}`" class="link"> Edit </RouterLink>
     <button v-if="hasToken" @click="deleteContact">Delte contact</button>
   </div>
   <div v-else>No contact details</div>

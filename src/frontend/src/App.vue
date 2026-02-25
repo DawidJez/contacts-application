@@ -21,7 +21,6 @@ function logout() {
   window.dispatchEvent(new Event("auth-changed"));
   router.push("/login");
 }
-
 </script>
 
 <template>
@@ -32,6 +31,7 @@ function logout() {
       <RouterLink to="/login" class="link"> Log in </RouterLink>
     </template>
     <template v-else>
+      <RouterLink to="/contacts" class="link"> Create contact </RouterLink>
       <button @click="logout">Log out</button>
     </template>
   </nav>

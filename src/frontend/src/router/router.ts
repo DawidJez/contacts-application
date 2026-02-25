@@ -4,12 +4,16 @@ import RegisterView from '../views/RegisterView.vue'
 import LoginView from '../views/LoginView.vue'
 import ContactList from '../views/ContactList.vue'
 import ContactDetails from '../views/ContactDetails.vue'
+import CreateContact from '../views/CreateContact.vue'
+import EditContact from '../views/EditContact.vue'
 
 const routes = [
   { path: '/register', component: RegisterView, meta: { nonAuth: true }}, // if authenticated you can't visit register
   { path: '/login', component: LoginView, meta: { nonAuth: true }},       // or login
   { path: '/list', component: ContactList, meta: { requiresAuth: false } }, // doesn't require authentication
   { path: "/contacts/:id", component: ContactDetails, props: true, meta: { requiresAuth: false }  },
+  { path: "/contacts", component: CreateContact, meta: { requiresAuth: true }  }, // requires authentication
+  { path: "/edit/:id", component: EditContact, props: true, meta: { requiresAuth: true }  }, // requires authentication
 
   { path: "/:pathMatch(.*)*", redirect: "/list" } // catches not existing paths
 ]
