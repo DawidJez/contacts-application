@@ -1,22 +1,28 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from "vue"
+import { useRouter } from "vue-router"
 
 const email = ref("");
 const password = ref("");
 const message = ref("");
 
-async function onSubmit() {
-    try {
-        const res = await fetch("/api/auth/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: email.value, password: password.value }),
-        });
+const router = useRouter();
 
-        const body = await res.text();
-        message.value = body || `Status: ${res.status} (empty body)`;
-        } catch (e: any) {
-        message.value = `Fetch error: ${e?.message ?? e}`;
+async function onSubmit() {
+    
+    const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.value, password: password.value }),
+    });
+
+    const body = await res.json();
+    message.value = body 
+
+    if (res.ok) {
+        setTimeout(() => {
+            router.push("/login");
+        }, 1000);
     }
 }
 </script>
@@ -28,7 +34,7 @@ async function onSubmit() {
             <input v-model="email" type="email" placeholder="email" required/>
             <input v-model="password" type="password" placeholder="password" required/>
             <button type="submit">Register</button>
-            <p v-if="message" class="color:red;">{{message}}</p>
+            <p v-if="message" class="color-red;">{{message}}</p>
         </form>
     </main>
 </template>

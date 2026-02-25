@@ -54,7 +54,7 @@ public static class AuthEndpoints
         await db.SaveChangesAsync();
 
         //return Results.Created($"/api/users/{user.Id}", new { user.Id, user.Email });
-        return Results.Ok("User created");
+        return Results.Ok("User created"); // To show message in frontend
     }
 
     // Login
