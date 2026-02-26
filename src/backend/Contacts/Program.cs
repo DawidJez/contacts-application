@@ -57,10 +57,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 // CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("Frontend", f => f.WithOrigins("http://127.0.0.1:5173/").AllowAnyHeader().AllowAnyMethod());
+    options.AddPolicy("Frontend", f => f.WithOrigins("http://127.0.0.1:5173").AllowAnyHeader().AllowAnyMethod());
 });
 
-// App starting up
+// App loading up
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
