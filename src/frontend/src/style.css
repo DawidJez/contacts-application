@@ -89,3 +89,7 @@ nav {
   border-right: 1px solid #ddd;
   padding: 2px 8px;
 }
+
+.link:last-child {
+  border-right: none;
+}

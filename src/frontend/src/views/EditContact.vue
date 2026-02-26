@@ -16,6 +16,9 @@ const categoryId = ref<number>(1);
 const subcategoryId = ref<number | null>(null);
 const customSubcategory = ref<string | null>(null);
 
+// helper to check what is actually changed
+const original = ref<any>(null);
+
 // User will see names of categories instead of ids 
 // it's better to fetch categories names with theirs ids from db
 // but for this small application it's not really necessary
@@ -51,39 +54,60 @@ onMounted(async () => {
     message.value = await res.text();
     return;
   }
-
+  // contacts details
   const c = await res.json();
+  
+  original.value = {
+    firstName: c.firstName ?? "",
+    lastName: c.lastName ?? "",
+    email: c.email ?? "",
+    phoneNumber: c.phoneNumber ?? null,
 
-  firstName.value = c.firstName ?? "";
-  lastName.value = c.lastName ?? "";
-  email.value = c.email ?? "";
-  phoneNumber.value = c.phoneNumber ?? null;
+    categoryId: c.categoryId ?? 1,
+    subcategoryId: c.subcategoryId ?? null,
+    customSubcategory: c.customSubcategory ?? null,
+  }
 
-  categoryId.value = c.categoryId ?? 1;
-  subcategoryId.value = c.subcategoryId ?? null;
-  customSubcategory.value = c.customSubcategory ?? null;
-    
+  // forms values
+  firstName.value = original.value.firstName;
+  lastName.value = original.value.lastName;
+  email.value = original.value.email;
+  phoneNumber.value = original.value.phoneNumber;
+
+  categoryId.value = original.value.categoryId;
+  subcategoryId.value = original.value.subcategoryId;
+  customSubcategory.value = original.value.customSubcategory;
+
   password.value = "";
 });
 
 async function onSubmit() {
-  // payload so we can check later what is to be sent
-  const payload: Record<string, any> = {
+  // current so we can check later what is to be sent
+  const current = {
     firstName: firstName.value,
     lastName: lastName.value,
     phoneNumber: phoneNumber.value,
     email: email.value,
-    password: password.value,
     categoryId: categoryId.value,
     subcategoryId: subcategoryId.value,
     customSubcategory: customSubcategory.value,
   };
+  // payload
+  const payload: Record<string, any> = {};
 
   // checking what can be deleted
-  Object.keys(payload).forEach((k) => {
-    const pl = payload[k];
-    if (pl === "" || pl === null || pl === undefined) delete payload[k];
+  (Object.keys(current) as (keyof typeof current)[]).forEach((k) => {
+    if (current[k] !== original.value?.[k]) payload[k] = current[k];
   });
+
+  // Send only when user entered new password
+  if (password.value !== "") payload.password = password.value;
+
+  // Nothing changed
+  if (Object.keys(payload).length === 0) {
+    message.value = "No changes";
+    return;
+  }
 
   // using patch method to edit only changed values
   const res = await fetch(`/api/contacts?id=${props.id}`, {
@@ -94,15 +118,13 @@ async function onSubmit() {
     },
     body: JSON.stringify(payload),
   });
-  console.log("payload after clean:", payload);
 
   if (res.ok) {
     message.value = "Contact updated";
     setTimeout(() => router.push(`/contacts/${props.id}`), 1000);
   }
 
-  const resText = await res.text();
-  message.value = resText || `${res.status} ${res.statusText}`;
+  message.value = await res.json();
 }
 </script>
 
