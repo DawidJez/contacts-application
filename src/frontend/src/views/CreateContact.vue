@@ -59,6 +59,7 @@ function validateEmail () {
   }
 
   if (!/^([^@\s]+@[^@\s]+\.[^@\s]+)$/.test(check)) validEmailMessage.value = "Invalid email format";
+  else validEmailMessage.value = "";
 }
 
 function validatePswd () {
@@ -70,6 +71,7 @@ function validatePswd () {
 
   if (check.length < 8) validPsswdMessage.value = "Password must be at least 8 characters";
   if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).+$/.test(check)) validPsswdMessage.value = "Invalid password format";
+  else validPsswdMessage.value = "";
 }
 
 function validatePhone () {
@@ -78,8 +80,9 @@ function validatePhone () {
     return;
   }
   const check = phoneNumber.value.trim();
-  
+
   if (!/^(\+[0-9]{7,15})$/.test(check)) validPhoneMessage.value = "Invalid phone number. Use international format, e.g. +48123456789";
+  else validPhoneMessage.value = "";
 }
 
 type Field = "email" | "password" | "phoneNumber";
