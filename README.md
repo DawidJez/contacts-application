@@ -88,6 +88,7 @@ docker compose up -d
 4. Setting up the backend:
 ```bash
 dotnet restore
+dotnet tool install dotnet-ef # or install globally -> dotnet tool install --global dotnet-ef
 dotnet ef database update --project src/backend/Contacts/Contacts.csproj
 dotnet run --project src/backend/Contacts/Contacts.csproj
 ```
