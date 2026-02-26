@@ -138,6 +138,7 @@ public static class ContactsEndpoints
         if (!string.IsNullOrWhiteSpace(req.PhoneNumber))
         {
             req.PhoneNumber = req.PhoneNumber.Trim();
+            req.PhoneNumber = System.Text.RegularExpressions.Regex.Replace(req.PhoneNumber, @"\s+", ""); // makes sure phones like +48 456... will validate
             var phone = req.PhoneNumber;
 
             if (!System.Text.RegularExpressions.Regex.IsMatch(phone, @"^(\+[0-9]{7,15})$")) 

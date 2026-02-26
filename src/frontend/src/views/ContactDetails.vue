@@ -49,11 +49,11 @@ async function deleteContact () {
 
   <div v-if="contact">
     <h3>{{ contact.firstName }} {{ contact.lastName }}</h3>
-    <h4 v-if="contact.email">{{ contact.email }}</h4>
-    <p v-if="contact.phoneNumber">{{ contact.phoneNumber }}</p>
+    <h4 v-if="contact.email">Email: {{ contact.email }}</h4>
+    <p v-if="contact.phoneNumber">Phone number: {{ contact.phoneNumber }}</p>
     <p v-if="contact.categoryName">Category: {{ contact.categoryName }}</p>
-    <p v-if="contact.subcategoryName">Subcategory: {{ contact.subcategoryName }}</p>
-    <p v-if="contact.customSubcategory">Custom category: {{ contact.customSubcategory }}</p>
+    <p v-if="contact.subcategoryName">{{ contact.subcategoryName }}</p>
+    <p v-if="contact.customSubcategory">{{ contact.customSubcategory }}</p>
     <RouterLink :to="`/edit/${props.id}`" v-if="hasToken" class="link"> Edit </RouterLink>
     <button v-if="hasToken" @click="deleteContact">Delte contact</button>
   </div>

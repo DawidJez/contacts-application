@@ -21,11 +21,11 @@ async function onSubmit() {
     if (res.ok) {
         const token = body.token;
         localStorage.setItem("token", token);
-        window.dispatchEvent(new Event("auth-changed")); // app vue listens
 
         message.value = "Logged in!";
 
         setTimeout(() => {
+            window.dispatchEvent(new Event("auth-changed")); // app vue listens
             router.push("/list");
         }, 1000);
     } else { message.value = body }    

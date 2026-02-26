@@ -31,7 +31,7 @@ function logout() {
       <RouterLink to="/login" class="link"> Log in </RouterLink>
     </template>
     <template v-else>
-      <RouterLink to="/contacts" class="link"> Create contact </RouterLink>
+      <RouterLink to="/contacts" class="link"> Add contact </RouterLink>
       <button @click="logout">Log out</button>
     </template>
   </nav>
