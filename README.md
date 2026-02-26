@@ -1,3 +1,4 @@
+# Contacts Application
 ## Table of contents
 - [Technical specification](#technical-specification)
 - [Used libraries](#used-libraries)
@@ -63,7 +64,8 @@
 ### Step by step (bash)
 1. Clone into repository:
 ```bash 
-git clone git@gitlab.com:lake-group/net-core.git 
+git clone git@github.com:DawidJez/contacts-application.git
+cd contacts-application
 ```
 2. Make sure to install dependencies  *If already installed continue from point 3* \
 2.1 You can set up docker by following this quide: https://docs.docker.com/engine/install/ubuntu/#installation-methods \
