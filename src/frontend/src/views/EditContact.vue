@@ -38,11 +38,14 @@ const matchingSubcategories = computed(() =>
   subcategories.filter((el) => el.categoryId === categoryId.value)
 );
 
+const isLoading = ref(true);
 // category changed -> reset other sub/custom categories
 watch(categoryId, () => {
+  if (isLoading.value) return // watch was activated while fetching data at first
+
   subcategoryId.value = null;
   customSubcategory.value = null;
-});
+}, { flush: "sync" });
 
 onMounted(async () => {
   const res = await fetch(`/api/contacts/${props.id}`, {
@@ -77,8 +80,9 @@ onMounted(async () => {
   categoryId.value = original.value.categoryId;
   subcategoryId.value = original.value.subcategoryId;
   customSubcategory.value = original.value.customSubcategory;
-
   password.value = "";
+  
+  isLoading.value = false;
 });
 
 
@@ -121,7 +125,7 @@ function validatePhone () {
     validPhoneMessage.value = "";
     return;
   }
-  const check = phoneNumber.value.trim();
+  const check = phoneNumber.value.replace(/\s+/g, '');
 
   if (!/^(\+[0-9]{7,15})$/.test(check)) validPhoneMessage.value = "Invalid phone number. Use international format, e.g. +48123456789";
   else validPhoneMessage.value = "";
@@ -215,13 +219,7 @@ async function onSubmit() {
           {{ s.name }}
         </option>
       </select>
-
-      <input
-        v-else-if="categoryId === 3"
-        v-model="customSubcategory"
-        placeholder="Custom category (optional)"
-      />
-
+      <input v-else-if="categoryId === 3" v-model="customSubcategory" placeholder="Custom category (optional)"/>
       <button type="submit">Save</button>
 
       <p v-if="message">{{ message }}</p>
