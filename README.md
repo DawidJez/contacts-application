@@ -1,3 +1,9 @@
+## Table of contents
+- [Technical specification](#technical-specification)
+- [Used libraries](#used-libraries)
+- [Architecture](#architecture)
+- [Set up application](#set-up-application)
+
 ## Technical specification
 ### Classes & methods
 
@@ -89,3 +95,4 @@ cd src/frontend
 npm install
 npm run dev
 ```
+6. Open the application in your browser: `http://127.0.0.1:5173/`
