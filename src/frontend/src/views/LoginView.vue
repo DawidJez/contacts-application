@@ -28,7 +28,7 @@ async function onSubmit() {
             window.dispatchEvent(new Event("auth-changed")); // app vue listens
             router.push("/list");
         }, 1000);
-    } else { message.value = body }    
+    } else { message.value = body.detail; }    
 }
 </script>
 
