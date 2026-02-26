@@ -93,3 +93,12 @@ nav {
 .link:last-child {
   border-right: none;
 }
+
+.signature {
+  margin-top: 16px;
+  padding: 10px 12px;
+  border-top: 1px solid #eee;
+  font-size: 12px;
+  opacity: 0.7;
+  text-align: center;
+}

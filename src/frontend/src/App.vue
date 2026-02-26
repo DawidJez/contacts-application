@@ -38,4 +38,7 @@ function logout() {
   <main>
     <RouterView/>
   </main>
+  <footer class="signature">
+    Made by: <strong>Dawid Jezierski</strong>
+  </footer>
 </template>
