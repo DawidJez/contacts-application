@@ -166,6 +166,9 @@ async function onSubmit() {
   // Nothing changed
   if (Object.keys(payload).length === 0) {
     message.value = "No changes";
+    setTimeout(() => {
+      router.push("/list");
+    }, 800);
     return;
   }
 
